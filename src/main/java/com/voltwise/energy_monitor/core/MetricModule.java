@@ -1,13 +1,7 @@
 package com.voltwise.energy_monitor.core;
 
-import com.voltwise.energy_monitor.model.Appliance;
-import com.voltwise.energy_monitor.model.DailyConsumption;
-import com.voltwise.energy_monitor.model.Home;
-import com.voltwise.energy_monitor.model.HomeMetrics;
-import com.voltwise.energy_monitor.repository.ApplianceRepository;
-import com.voltwise.energy_monitor.repository.DailyConsumptionRepository;
-import com.voltwise.energy_monitor.repository.HomeMetricsRepository;
-import com.voltwise.energy_monitor.repository.HomeRepository;
+import com.voltwise.energy_monitor.model.*;
+import com.voltwise.energy_monitor.repository.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +12,14 @@ public class MetricModule {
     private final HomeMetricsRepository homeMetricsRepository;
     private final DailyConsumptionRepository dailyConsumptionRepository;
     private final ApplianceRepository applianceRepository;
+    private final ApplianceMetricsRepository applianceMetricsRepository;
 
-    public MetricModule(HomeRepository homeRepository, HomeMetricsRepository homeMetricsRepository, DailyConsumptionRepository dailyConsumptionRepository, ApplianceRepository applianceRepository) {
+    public MetricModule(HomeRepository homeRepository, HomeMetricsRepository homeMetricsRepository, DailyConsumptionRepository dailyConsumptionRepository, ApplianceRepository applianceRepository, ApplianceMetricsRepository applianceMetricsRepository) {
         this.homeRepository = homeRepository;
         this.homeMetricsRepository = homeMetricsRepository;
         this.dailyConsumptionRepository = dailyConsumptionRepository;
         this.applianceRepository = applianceRepository;
+        this.applianceMetricsRepository = applianceMetricsRepository;
     }
 
     //home and metrics management
@@ -58,6 +54,11 @@ public class MetricModule {
     @GetMapping("/getAppliances/{id}")
     public List<Appliance> getAppliances(@PathVariable("id") int homeId){
         return applianceRepository.findByHomeId(homeId);
+    }
+
+    @GetMapping("/getApplianceMetrics/{id}")
+    public ApplianceMetrics getApplianceMetrics(@PathVariable("id") int applianceId){
+        return applianceMetricsRepository.getByApplianceId(applianceId);
     }
 
 

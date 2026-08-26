@@ -16,3 +16,30 @@ body{
     background-color: #ccc;
     cursor: pointer;
 }
+.home-card.normal {
+    border: 2px solid green;
+}
+
+.home-card.warning {
+    border: 2px solid orange;
+}
+
+.home-card.penalty {
+    border: 2px solid red;
+}
+
+.home-card.unknown {
+    border: 2px solid gray;
+}
+
+.appliance-card {
+    border: 1px solid #999;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.appliance-card.anomalous {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}

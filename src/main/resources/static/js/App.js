@@ -8,7 +8,14 @@ class App{
     async init(){
         const homes= await this.loadHomes();
 
-        this.dashboard=new Dashboard("Dashboard",homes);
+        const homeMetrics = await this.loadHomeMetrics(homes);
+
+        const combinedHomes = homes.map((home,index) => ({
+            ...home,
+            ...homeMetrics[index]
+        }))
+
+        this.dashboard=new Dashboard("Dashboard",combinedHomes);
 
         const dashboardElement=this.dashboard.render();
 
@@ -24,6 +31,23 @@ class App{
 
         const homes=await response.json();
         return homes;
+    }
+
+    async loadHomeMetrics(homes){
+        //await: pause the function till this is done
+        //fetch: gives a promise/ result will arrive later
+        const requests=homes.map(async home => {
+            const response= await fetch(`/metric/getHomeMetrics/${home.id}`);
+
+            const text = await response.text();
+
+            if (!text)
+                return {};
+
+            return JSON.parse(text);
+        });
+
+        return await Promise.all(requests);
     }
 
 

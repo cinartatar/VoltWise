@@ -10,6 +10,19 @@ export class HomeCard{
         const card= document.createElement("article");
         card.className = "home-card";
 
+        if (!this.home.budgetState) {
+            card.classList.add("unknown");
+        }
+        else if (this.home.budgetState === "WARNING") {
+            card.classList.add("warning");
+        }
+        else if (this.home.budgetState === "PENALTY") {
+            card.classList.add("penalty");
+        }
+        else {
+            card.classList.add("normal");
+        }
+
         const title= document.createElement("h2");
         title.textContent = `Home ${this.home.id}`;
         card.appendChild(title);
