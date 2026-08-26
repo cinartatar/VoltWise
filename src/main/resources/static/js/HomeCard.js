@@ -23,7 +23,7 @@ export class HomeCard{
         card.appendChild(email);
 
         card.addEventListener("click",async ()=>{
-            //1st html el whose class is modal-overlay
+            //1st html element whose class is modal-overlay
             const existingModal= document.querySelector(".modal-overlay");
             if (existingModal){
                 existingModal.remove();
