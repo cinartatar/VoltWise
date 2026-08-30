@@ -1,0 +1,31 @@
+Energy analytics, budget auditing platform to monitor
+household electricity consumption
+    -Processes continuous data streams from smart home appliances
+    -Provides users with immediate vis into overall power metrics
+     and utility ongoing costs
+
+Platform operates as automated tracking and early-warning ecosys.
+Evaluates acc energy usage and financial spend against predefined
+    targeted quotas (limits)
+And simultaneously tracks individual appliances with
+    - high speed in mem consecutive breach counters
+to catch imm power limit violations
+
+When a home breaches 100% budget threshold, platform dyn enforces
+a premium penalty tariff tier and accelerates billing rates
+
+When these quota breaches/ recurring device anomalies are detected,
+we orchestrate a notif pipeline that utilizes gen ai to synthasize
+and dispatch peronalized, tailored email alerts, guides consumer
+
+
+
+WEB APP (client side frontend - interacts with the core to deliver a responsive monitoring dashboard)
+CORE (Spring boot monolith - orchestrate real time streaming data, evaluates live threshold metrics
+        , enforces dyn billing rules, drives the llm prompt pipeline)
+TELEMETRY SENSORS (Autonomous bg sim)
+APACHE KAFKA (distributed message broker, bidirectional event arch)
+APACHE IGNITE (in-mem data grid, manages active appliance counters, handles instant penalties, serves high-freq UI)
+POSTGRESQL DATABASE (maintains structured data requiring strict ACID compliance, including master registries, historical logs, financial
+audit trails, and permanent LLM recommendations)
+GEMINI (LLM integrator for dyn prompts, transforms tech grid metrics to email alerts)

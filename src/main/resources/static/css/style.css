@@ -1,0 +1,74 @@
+body{
+    margin: 0;
+    font-family: sans-serif;
+}
+.dashboard{
+    padding: 24px;
+}
+.home-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 16px;
+}
+.home-card{
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #ccc;
+    cursor: pointer;
+}
+.home-card.normal {
+    border: 2px solid green;
+}
+
+.home-card.warning {
+    border: 2px solid orange;
+}
+
+.home-card.penalty {
+    border: 2px solid red;
+}
+
+.home-card.unknown {
+    border: 2px solid gray;
+}
+
+.appliance-card {
+    border: 1px solid #999;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.appliance-card.anomalous {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}
+
+.toast{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    background-color: #333;
+    color: white;
+
+    padding: 12px 18px;
+    border-radius: 8px;
+
+    z-index: 1000;
+}
+
+.loading {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    background-color: #333;
+    color: white;
+
+    padding: 10px 16px;
+    border-radius: 8px;
+
+    z-index: 1000;
+}
