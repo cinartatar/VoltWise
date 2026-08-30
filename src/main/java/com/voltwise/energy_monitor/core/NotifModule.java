@@ -5,6 +5,8 @@ import com.google.genai.types.GenerateContentResponse;
 import com.voltwise.energy_monitor.model.*;
 import com.voltwise.energy_monitor.repository.*;
 import com.voltwise.energy_monitor.service.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,10 @@ public class NotifModule {
 
 
     //important stuff -> module gets told ->  handle notif
+
+    private static final Logger log =
+            LoggerFactory.getLogger(NotifModule.class);
+
     private final Client client=new Client(); //Gemini's client
     private final HomeRepository homeRepository;
     private final ApplianceRepository applianceRepository;
@@ -46,15 +52,13 @@ public class NotifModule {
     public String generateAdvice(String prompt){
         //call gemini
         try{
-            System.out.println("GOOGLE_API_KEY visible to JVM: " +
-                    (System.getenv("GOOGLE_API_KEY") != null));
 
             GenerateContentResponse response=client.models.generateContent("gemini-3.6-flash",prompt,null);
 
             //return generated text
             return response.text();
         }catch (Exception e){
-            System.err.println("Gemini unavailable: "+e.getMessage());
+            log.warn("Gemini unavailable: {}",e.getMessage());
             return """
                     Enerji tüketiminiz için önemli bir uyarı oluşturuldu.
                     Lütfen mevcut tüketim değerlerinizi kontrol edin.
@@ -172,12 +176,12 @@ public class NotifModule {
         try {
             recommendationRepository.save(recommendation);
         }catch (Exception e){
-            System.err.println("Recommendation save failed: "+e.getMessage());
+            log.warn("Recommendation save failed: {}",e.getMessage());
         }
         try {
         emailService.send(home.getContactEmail(),"Enerji Bütçe Uyarısı",advice);
         }catch (Exception e){
-            System.err.println("Email sending failed: "+ e.getMessage());
+            log.warn("Email sending failed: {}", e.getMessage());
         }
     }
     //send penalty alert
@@ -202,12 +206,12 @@ public class NotifModule {
         try {
             recommendationRepository.save(recommendation);
         }catch (Exception e){
-            System.err.println("Recommendation save failed: "+e.getMessage());
+            log.warn("Recommendation save failed: {}",e.getMessage());
         }
         try {
         emailService.send(home.getContactEmail(),"Enerji Bütçesi Aşıldı",advice);
         }catch (Exception e){
-            System.err.println("Email sending failed: "+ e.getMessage());
+            log.warn("Email sending failed: {}", e.getMessage());
         }
     }
     //send appliance alert
@@ -228,12 +232,12 @@ public class NotifModule {
         try {
             recommendationRepository.save(recommendation);
         }catch (Exception e){
-            System.err.println("Recommendation save failed: "+e.getMessage());
+            log.warn("Recommendation save failed: {}",e.getMessage());
         }
         try {
             emailService.send(home.getContactEmail(),"Cihaz Tüketim Anomalisi",advice);
         }catch (Exception e){
-            System.err.println("Email sending failed: "+ e.getMessage());
+            log.warn("Email sending failed: {}", e.getMessage());
         }
     }
 

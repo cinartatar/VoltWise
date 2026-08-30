@@ -25,7 +25,7 @@ public class Recommendation {
         this.createdAt = LocalDateTime.now();
     }
 
-    protected Recommendation() {
+    public Recommendation() {
     }
 
     public int getId() {

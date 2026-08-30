@@ -18,7 +18,7 @@ public class Home {
 
     }
 
-    protected Home() {
+    public Home() {
     }
 
     public int getId() {

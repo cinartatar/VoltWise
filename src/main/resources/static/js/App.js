@@ -3,17 +3,19 @@ class App{
 
     constructor() {
         this.init();
+
     }
 
     async init(){
         const homes= await this.loadHomes();
+        homes.sort((a,b) => a.id - b.id);
 
         const homeMetrics = await this.loadHomeMetrics(homes);
 
         const combinedHomes = homes.map((home,index) => ({
             ...home,
             ...homeMetrics[index]
-        }))
+        }));
 
         this.dashboard=new Dashboard("Dashboard",combinedHomes);
 

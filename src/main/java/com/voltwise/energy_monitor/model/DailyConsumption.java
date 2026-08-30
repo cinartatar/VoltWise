@@ -28,7 +28,7 @@ public class DailyConsumption {
         this.startCost = startCost;
     }
 
-    protected DailyConsumption() {
+    public DailyConsumption() {
     }
 
     public int getId() {

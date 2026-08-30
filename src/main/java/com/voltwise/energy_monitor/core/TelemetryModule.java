@@ -5,6 +5,8 @@ import com.voltwise.energy_monitor.model.*;
 import com.voltwise.energy_monitor.repository.ApplianceMetricsRepository;
 import com.voltwise.energy_monitor.repository.HomeMetricsRepository;
 import com.voltwise.energy_monitor.repository.HomeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class TelemetryModule {
             //update apache ignite automatically with acc energy consumption and billing homeMetrics for each home with each telemetry message
 
     //Sensor -> Reading -> Kafka -> Module -> Reveal
+    private static final Logger log =
+            LoggerFactory.getLogger(NotifModule.class);
     private final TariffModule tariffModule;
     private final HomeMetricsRepository homeMetricsRepository;
     private final ApplianceMetricsRepository applianceMetricsRepository;
@@ -41,7 +45,6 @@ public class TelemetryModule {
 
     @KafkaListener(topics = "telemetry",groupId = "energy-monitor")//react to the message in telemetry topic
     public void processTelemetry(ApplianceReading reading){
-        System.out.println("Recieved: "+reading);
 
         boolean anomaly= tariffModule.checkApplianceAnomaly(reading);
         if (anomaly){
@@ -133,8 +136,8 @@ public class TelemetryModule {
                 try {
                     notifModule.sendPenaltyAlert(reading.getHomeId());
                 } catch (Exception e) {
-                    System.err.println(
-                            "Penalty notification failed: " + e.getMessage()
+                    log.warn(
+                            "Penalty notification failed: {}", e.getMessage()
                     );
                 }
             }

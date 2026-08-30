@@ -2,6 +2,7 @@
 export class ApplianceCard{
     constructor(appliance) {
         this.appliance = appliance;
+        this.pollingId = null;
     }
     //render into html code
     render(){
@@ -26,17 +27,21 @@ export class ApplianceCard{
 
         this.currentPowerWatts = document.createElement("p");
         this.currentPowerWatts.textContent =
-            `Current Cost: ${this.appliance.currentPowerWatts.toFixed(2)} W`;
+            this.appliance.currentPowerWatts !== undefined
+                ? `Current Power: ${this.appliance.currentPowerWatts.toFixed(2)} W`
+                : "Current Power: unavailable";
         card.appendChild(this.currentPowerWatts);
 
         this.accumulatedEnergyKWh = document.createElement("p");
         this.accumulatedEnergyKWh.textContent =
-            `Energy Used: ${this.appliance.accumulatedEnergyKWh.toFixed(2)} kWh`;
+            this.appliance.accumulatedEnergyKWh !== undefined
+                ? `Energy Used: ${this.appliance.accumulatedEnergyKWh.toFixed(2)} kWh`
+                : "Energy Used: unavailable";
         card.appendChild(this.accumulatedEnergyKWh);
 
         this.anomaly = document.createElement("p");
         this.anomaly.textContent =
-            `Anomalous: ${this.appliance.anomalous} kWh`;
+            `Anomalous: ${this.appliance.anomalous}`;
         card.appendChild(this.anomaly);
 
         this.startPolling(card);
@@ -49,6 +54,10 @@ export class ApplianceCard{
         //fetch: gives a promise/ result will arrive later
         const response= await fetch(`/metric/getApplianceMetrics/${this.appliance.id}`);
 
+        if (!response.ok){
+            throw new Error(`Failed to load appliance metrics ${this.appliance.id}`);
+        }
+
         const text = await response.text();
 
         if (!text)
@@ -59,24 +68,40 @@ export class ApplianceCard{
 
     startPolling(card){
         this.pollingId = setInterval(async ()=> {
-            const metrics = await this.loadMetrics();
-            if (!metrics) return;
+            try{
+                const metrics = await this.loadMetrics();
+                if (!metrics) return;
 
-            this.currentPowerWatts.textContent =
-                `Current Cost: ${metrics.accumulatedCost.toFixed(2)}`;
+                this.currentPowerWatts.textContent =
+                    metrics.currentPowerWatts !== undefined
+                        ? `Current Power: ${metrics.currentPowerWatts.toFixed(2)} W`
+                        : "Current Power: unavailable";
 
-            this.accumulatedEnergyKWh.textContent =
-                `Energy Used: ${metrics.accumulatedEnergyKWh.toFixed(2)} kWh`;
+                this.accumulatedEnergyKWh.textContent =
+                    metrics.accumulatedEnergyKWh !== undefined
+                        ? `Energy Used: ${metrics.accumulatedEnergyKWh.toFixed(2)} kWh`
+                        : "Energy Used: unavailable";
 
-            this.anomaly.textContent=
-                `Anomalous: ${metrics.anomalous}`;
+                this.anomaly.textContent=
+                    `Anomalous: ${metrics.anomalous}`;
 
-            if (metrics.anomalous) {
-                card.classList.add("anomalous");
-            } else {
-                card.classList.remove("anomalous");
+                if (metrics.anomalous) {
+                    card.classList.add("anomalous");
+                } else {
+                    card.classList.remove("anomalous");
+                }
+            }
+            catch (error){
+                console.error("Appliance polling failed: ", error);
             }
 
-        },5000)
+        },2000)
+    }
+
+    stopPolling(){
+        if (this.pollingId!==null){
+            clearInterval(this.pollingId);
+            this.pollingId = null;
+        }
     }
 }

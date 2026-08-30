@@ -4,6 +4,7 @@ export class ApplianceList{
 
     constructor(appliances) {
         this.appliances=appliances;
+        this.applianceCards = [];
     }
 
     render(){
@@ -18,9 +19,15 @@ export class ApplianceList{
 
         this.appliances.forEach(appliance => {
             const applianceCard= new ApplianceCard(appliance);
+
+            this.applianceCards.push(applianceCard);
+
             list.appendChild(applianceCard.render());
         });
 
         return list;
+    }
+    stopPolling(){
+        this.applianceCards.forEach(card => card.stopPolling())
     }
 }

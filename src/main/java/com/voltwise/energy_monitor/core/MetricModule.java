@@ -1,7 +1,10 @@
 package com.voltwise.energy_monitor.core;
 
+import com.voltwise.energy_monitor.dto.AssetRegistrationEvent;
+import com.voltwise.energy_monitor.dto.HomeRegistrationRequest;
 import com.voltwise.energy_monitor.model.*;
 import com.voltwise.energy_monitor.repository.*;
+import com.voltwise.energy_monitor.service.RegistrationProducer;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,13 +16,15 @@ public class MetricModule {
     private final DailyConsumptionRepository dailyConsumptionRepository;
     private final ApplianceRepository applianceRepository;
     private final ApplianceMetricsRepository applianceMetricsRepository;
+    private final RegistrationProducer registrationProducer;
 
-    public MetricModule(HomeRepository homeRepository, HomeMetricsRepository homeMetricsRepository, DailyConsumptionRepository dailyConsumptionRepository, ApplianceRepository applianceRepository, ApplianceMetricsRepository applianceMetricsRepository) {
+    public MetricModule(HomeRepository homeRepository, HomeMetricsRepository homeMetricsRepository, DailyConsumptionRepository dailyConsumptionRepository, ApplianceRepository applianceRepository, ApplianceMetricsRepository applianceMetricsRepository, RegistrationProducer registrationProducer) {
         this.homeRepository = homeRepository;
         this.homeMetricsRepository = homeMetricsRepository;
         this.dailyConsumptionRepository = dailyConsumptionRepository;
         this.applianceRepository = applianceRepository;
         this.applianceMetricsRepository = applianceMetricsRepository;
+        this.registrationProducer = registrationProducer;
     }
 
     //home and metrics management
@@ -32,8 +37,17 @@ public class MetricModule {
             //POST endpoint via swagger
             //must persist the struct to postgresql and publish the asset config event to apache kafka registration topic
     @PostMapping("/registerHome")
-    public void registerHome(@RequestBody Home home){
-        homeRepository.save(home);
+    public void registerHome(@RequestBody HomeRegistrationRequest request){
+
+        Home savedHome = homeRepository.save(request.getHome());
+        for (Appliance appliance: request.getAppliances()){
+            appliance.setHomeId(savedHome.getId());
+        }
+        List<Appliance> savedAppliances = applianceRepository.saveAll(request.getAppliances());
+
+        AssetRegistrationEvent event = new AssetRegistrationEvent(savedHome,savedAppliances);
+
+        registrationProducer.publish(event);
     }
 
     @GetMapping("/getHomes")

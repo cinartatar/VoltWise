@@ -7,25 +7,25 @@ import jakarta.persistence.*;
 public class Appliance {
     @Id
     private int id;
-    private int homeId;
+    private Integer homeId;
     private String name;
     private double powerThreshold;
 
-    public Appliance(int id, int homeId, String name, double powerThreshold) {
+    public Appliance(int id, Integer homeId, String name, double powerThreshold) {
         this.id = id;
         this.homeId = homeId;
         this.name = name;
         this.powerThreshold = powerThreshold;
     }
 
-    protected Appliance() {
+    public Appliance() {
     }
 
     public int getId() {
         return id;
     }
 
-    public int getHomeId() {
+    public Integer getHomeId() {
         return homeId;
     }
 
@@ -42,7 +42,7 @@ public class Appliance {
         this.id = id;
     }
 
-    public void setHomeId(int homeId) {
+    public void setHomeId(Integer homeId) {
         this.homeId = homeId;
     }
 

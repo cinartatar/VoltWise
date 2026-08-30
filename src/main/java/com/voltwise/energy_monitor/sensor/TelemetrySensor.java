@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Component
@@ -17,8 +19,9 @@ public class TelemetrySensor {
     //send to kafka with topic telemetry
     private final KafkaTemplate<String, ApplianceReading> kafkaTemplate;
     private final ApplianceRepository applianceRepository;
+    private final List<Appliance> appliances=new CopyOnWriteArrayList<>();
 
-    public TelemetrySensor(KafkaTemplate<String, ApplianceReading> kafkaTemplate,ApplianceRepository applianceRepository) {
+    public TelemetrySensor(KafkaTemplate<String, ApplianceReading> kafkaTemplate, ApplianceRepository applianceRepository) {
         this.kafkaTemplate = kafkaTemplate;
         this.applianceRepository = applianceRepository;
     }
@@ -37,5 +40,9 @@ public class TelemetrySensor {
         for (Appliance appliance:applianceRepository.findAll()){
             sendReading(generateReading(appliance));
         }
+    }
+
+    public void addAppliances(List<Appliance> newAppliances) {
+        this.appliances.addAll(newAppliances);
     }
 }

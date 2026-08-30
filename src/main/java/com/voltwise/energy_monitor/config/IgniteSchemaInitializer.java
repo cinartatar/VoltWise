@@ -36,7 +36,5 @@ public class IgniteSchemaInitializer implements CommandLineRunner {
                     LAST_READING_TIMESTAMP TIMESTAMP WITH LOCAL TIME ZONE
                 );
                 """);
-
-        System.out.println("Ignite Tables have been initialized");
     }
 }

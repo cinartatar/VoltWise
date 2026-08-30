@@ -12,10 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class EnergyMonitorApplication {
 
 	public static void main(String[] args) {
-		System.out.println(
-				"DB_PASSWORD visible to JVM: " +
-						(System.getenv("DB_PASSWORD") != null)
-		);
 		SpringApplication.run(EnergyMonitorApplication.class, args);
 	}
 
