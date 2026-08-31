@@ -73,3 +73,6 @@ http://localhost:8080/swagger-ui.html
 - Gemini-generated Turkish recommendations
 - Email notifications
 - Live frontend polling and charts
+
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
