@@ -15,6 +15,7 @@ public class IgniteConfig {
     @Lazy public IgniteClient igniteClient(){
         return IgniteClient.builder()
                 .addresses(igniteAddress)
+                .loggerFactory(System::getLogger)
                 .build();
     }
 }
