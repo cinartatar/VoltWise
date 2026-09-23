@@ -23,11 +23,37 @@ services:
       POSTGRES_DB: energy_monitor
       POSTGRES_USER: energy_app
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres18_data:/var/lib/postgresql
     restart: unless-stopped
+  app:
+    build: .
+    container_name: voltwise
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/energy_monitor
+      DB_USERNAME: energy_app
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      IGNITE_ADDRESS: ignite:10800
+
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+
+      NORMAL_TARIFF_RATE: ${NORMAL_TARIFF_RATE}
+      PENALTY_TARIFF_RATE: ${PENALTY_TARIFF_RATE}
+      SNAPSHOT_RATE_MS: ${SNAPSHOT_RATE_MS}
+      REGISTRATION_TOPIC: ${REGISTRATION_TOPIC}
+    depends_on:
+      - postgres
+      - kafka
+      - ignite
 
 volumes:
   ignite_data:
