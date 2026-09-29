@@ -10,6 +10,8 @@ class App{
         const homes= await this.loadHomes();
         homes.sort((a,b) => a.id - b.id);
 
+        this.homesSnapshot = JSON.stringify(homes);
+
         const homeMetrics = await this.loadHomeMetrics(homes);
 
         const combinedHomes = homes.map((home,index) => ({
@@ -23,6 +25,7 @@ class App{
 
         const appElement = document.getElementById("app");
         appElement.appendChild(dashboardElement);
+        this.startHomePolling();
     }
 
     //async while fetch happens, don't wait
@@ -31,8 +34,13 @@ class App{
         //fetch: gives a promise/ result will arrive later
         const response= await fetch(`/metric/getHomes`);
 
-        const homes=await response.json();
-        return homes;
+        if (!response.ok) {
+            throw new Error(
+                `Failed to load homes: ${response.status}`
+            );
+        }
+
+        return await response.json();
     }
 
     async loadHomeMetrics(homes){
@@ -50,6 +58,27 @@ class App{
         });
 
         return await Promise.all(requests);
+    }
+
+    startHomePolling(){
+        setInterval(async ()=>{
+            try {
+                const homes = await this.loadHomes();
+                homes.sort((a, b) => a.id - b.id);
+
+                const newSnapshot =
+                    JSON.stringify(homes);
+
+                if (newSnapshot !== this.homesSnapshot) {
+                    window.location.reload();
+                }
+            }catch (error){
+                console.error(
+                    "Failed to check for home updates:",
+                    error
+                );
+            }
+        },2000)
     }
 
 

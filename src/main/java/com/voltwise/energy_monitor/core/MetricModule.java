@@ -5,6 +5,8 @@ import com.voltwise.energy_monitor.dto.HomeRegistrationRequest;
 import com.voltwise.energy_monitor.model.*;
 import com.voltwise.energy_monitor.repository.*;
 import com.voltwise.energy_monitor.service.RegistrationProducer;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +39,7 @@ public class MetricModule {
             //POST endpoint via swagger
             //must persist the struct to postgresql and publish the asset config event to apache kafka registration topic
     @PostMapping("/registerHome")
-    public void registerHome(@RequestBody HomeRegistrationRequest request){
+    public ResponseEntity<AssetRegistrationEvent> registerHome(@RequestBody HomeRegistrationRequest request){
 
         Home savedHome = homeRepository.save(request.getHome());
         for (Appliance appliance: request.getAppliances()){
@@ -48,6 +50,34 @@ public class MetricModule {
         AssetRegistrationEvent event = new AssetRegistrationEvent(savedHome,savedAppliances);
 
         registrationProducer.publish(event);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(event);
+    }
+
+    @PutMapping("/updateHome/{id}")
+    public ResponseEntity<Home> updateHome(
+            @PathVariable("id") int homeId,
+            @RequestBody Home updatedHome
+    ) {
+        return homeRepository.findById(homeId)
+                .map(home -> {
+                    home.setContactEmail(updatedHome.getContactEmail());
+                    home.setMonthlyBudgetLimit(
+                            updatedHome.getMonthlyBudgetLimit()
+                    );
+
+                    Home savedHome = homeRepository.save(home);
+
+                    return ResponseEntity.ok(savedHome);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/getHome/{id}")
+    public ResponseEntity<Home> getHome(@PathVariable("id") int homeId) {
+        return homeRepository.findById(homeId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/getHomes")
