@@ -115,4 +115,16 @@ public class MetricModule {
 
         return dailyConsumptionRepository.findByHomeId(homeId);
     }
+
+    @DeleteMapping("/deleteHome/{id}")
+    public ResponseEntity<Void> deleteHome(@PathVariable("id") int homeId) {
+
+        if (!homeRepository.existsById(homeId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        homeRepository.deleteById(homeId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
